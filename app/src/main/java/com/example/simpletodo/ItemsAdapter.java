@@ -12,36 +12,56 @@ import java.util.List;
 
 //Responsible for displaying data from the model into a row in the recycler view
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
+
+    //Create listener function for Long Click
     public interface OnLongClickListener{
         void onItemLongClicked(int position);
     }
 
-    List<String> items;
-    OnLongClickListener longClickListener;
+    //Create listener function for Click
+    public interface OnClickListener{
+        void onItemClicked(int position);
+    }
 
-    public ItemsAdapter(List<String> items, OnLongClickListener longClickListener) {
+    List<String> items;
+
+    //Create listeners
+    OnLongClickListener longClickListener;
+    OnClickListener clickListener;
+
+
+    //Constructor that receives list of items and listeners
+    public ItemsAdapter(List<String> items, OnLongClickListener longClickListener, OnClickListener clickListener) {
         this.items = items;
         this.longClickListener = longClickListener;
+        this.clickListener = clickListener;
     }
 
     @NonNull
     @Override
+    //When the view holder is created
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+
         //Use layout inflator to inflate a view
         View todoView = LayoutInflater.from(viewGroup.getContext()).inflate(android.R.layout.simple_list_item_1, viewGroup,false);
-        //wrap it inside a View Holder and return it
+
+        //Wrap it inside a View Holder and return it
         return new ViewHolder(todoView);
     }
 
     @Override
+    //When the view holder is binded
     public void onBindViewHolder(@NonNull ItemsAdapter.ViewHolder viewHolder, int i) {
+
         //Grab the item at position i
         String item = items.get(i);
+
         //Bind the item into the specified view holder
         viewHolder.bind(item);
     }
 
     @Override
+    //Get amount of elements in list
     public int getItemCount() {
         return items.size();
     }
@@ -55,9 +75,19 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
             super(itemView);
             tvItem = itemView.findViewById(android.R.id.text1);
         }
+
         //Update the view inside of the view holder with this data
         public void bind(String item){
             tvItem.setText(item);
+            tvItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickListener.onItemClicked(getAdapterPosition());
+                }
+
+            });
+
+
             tvItem.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
